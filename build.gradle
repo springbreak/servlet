@@ -1,0 +1,44 @@
+apply plugin: "eclipse"
+apply plugin: "war"
+apply plugin: "tomcat"
+ 
+war { baseName='learn-servlet' }
+ 
+sourceCompatibility = 1.8
+ 
+buildscript {
+  repositories {
+    jcenter()
+  }
+ 
+  dependencies { classpath 'org.gradle.api.plugins:gradle-tomcat-plugin:1.0' }
+}
+ 
+repositories {
+  mavenCentral()
+}
+ 
+ext {
+  tomcatVersion="8.0.9"
+  servletJspApiVersion="2.3.1"
+  servletApiVersion="3.1.0"
+}
+ 
+dependencies {
+  compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.16'
+  compile 'javax.servlet.jsp.jstl:jstl-api:1.2'
+  providedCompile "javax.servlet:javax.servlet-api:$servletApiVersion"
+  providedCompile "javax.servlet.jsp:javax.servlet.jsp-api:$servletJspApiVersion"
+ 
+  runtime ("javax.servlet:jstl:1.2") {
+    exclude group: "javax.servlet", module: "javax.servlet-api"
+    exclude group: "javax.servlet", module: "javax.servlet.jsp-api"
+  }
+  testCompile "junit:junit:4.11"
+ 
+  tomcat "org.apache.tomcat.embed:tomcat-embed-core:$tomcatVersion",
+      "org.apache.tomcat.embed:tomcat-embed-logging-juli:$tomcatVersion"
+  tomcat("org.apache.tomcat.embed:tomcat-embed-jasper:$tomcatVersion") {
+    exclude group: 'org.eclipse.jdt.core.compiler', module: 'ecj'
+  }
+}
