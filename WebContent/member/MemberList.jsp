@@ -15,12 +15,12 @@
 		<a href='add.do'>신규 회원</a>
 	</p>
 	<c:forEach var="member" items="${members}"> 
-${member.no},
-<a href='update.do?no=${member.no}'>${member.name}</a>,
-${member.email},
-${member.createdDate}
-<a href='delete.do?no=${member.no}'>[삭제]</a>
-		<br>
+	${member.id},
+  <a href='update.do?id=${member.id}'>${member.name}</a>,
+  ${member.email},
+  ${member.createdDate}
+  <a href='delete.do?id=${member.id}'>[삭제]</a>
+	<br>
 	</c:forEach>
 	<jsp:include page="/Tail.jsp" />
 </body>

@@ -5,18 +5,24 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
+import lambda.bind.DataBinding;
 import lambda.controller.Controller;
 import lambda.dao.MemberDao;
 import lambda.vo.Member;
 
-public class LoginCtrl implements Controller {
 
+public class LoginCtrl implements Controller, DataBinding{
+
+  private MemberDao memberDao;
+  
+  public LoginCtrl setMemberDao(MemberDao memberDao) {
+    this.memberDao = memberDao;
+    return this;
+  }
+  
   @Override
   public String execute(Map<String, Object> model) throws Exception {
-    // TODO Auto-generated method stub
-    
     try {
-      
       HttpSession session = (HttpSession) model.get("session");
       if (session.getAttribute("member") != null) {
         // case: already logged in
@@ -27,15 +33,12 @@ public class LoginCtrl implements Controller {
         // case: GET
         return "/auth/LoginForm.jsp";
       } 
-
+      
       // case: POST
-      
-      
-      MemberDao md = (MemberDao) model.get("memberDao");
       String email = (String) model.get("email");
       String password = (String) model.get("password");
       
-      Member mb = md.exist(email, password);
+      Member mb = memberDao.exist(email, password);
       
       if (mb == null) {
         return "auth/LoginFail.jsp";
@@ -47,5 +50,14 @@ public class LoginCtrl implements Controller {
     } catch (Exception e) {
       throw new ServletException(e);
     }
+  }
+
+  @Override
+  public Object[] getDataPairs() {
+    
+    return new Object[] {
+        "email", String.class,
+        "password", String.class
+    };
   }
 }

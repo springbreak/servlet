@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 import lambda.controller.Controller;
 
 public class LogoutCtrl implements Controller {
-
+  
   @Override
   public String execute(Map<String, Object> model) throws Exception {
     // TODO Auto-generated method stub
@@ -17,5 +17,4 @@ public class LogoutCtrl implements Controller {
     
     return "redirect:login.do";
   }
-
 }
