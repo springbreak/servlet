@@ -1,0 +1,92 @@
+package lambda.context;
+
+import java.io.FileReader;
+import java.lang.reflect.Method;
+import java.util.Hashtable;
+import java.util.Properties;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+
+import lambda.dao.MemberDao;
+
+// the purpose of this class is not to modify ContextLoaderListener 
+// when DAOs or controllers added
+public class ApplicationContext {
+
+	// Hashtable is synchronized while Hashmap isn't
+	Hashtable<String, Object> objTable;
+	
+	public Object getBeans(String beanName) {
+		return objTable.get(beanName);
+	}
+	
+	public ApplicationContext(String propsPath) throws Exception{
+		objTable = new Hashtable<String, Object>();
+		Properties props = new Properties();
+		props.load(new FileReader(propsPath));
+		
+		createInstFromProps(props);
+		injectDependency();
+	}
+
+	private void createInstFromProps(Properties props) throws Exception {
+		// We can't create resources provided by Tomcat 
+		// e.g jndi.dataSource = java:comp/env/jdbc/studydb
+		// The acronym JNDI stands for Java Naming and Directory Interface
+		
+		// To get the resources, we will use jaxax.naming.Context
+		Context context = new InitialContext();
+		String key = null, value = null;
+		
+		for(Object propsKey : props.keySet()) {
+			key = (String) propsKey;
+			value = props.getProperty(key);
+			
+			if (key.startsWith("jndi.")) {
+				// get a tomcat provided resource and put it to the object table
+				objTable.put(key, context.lookup(value));
+			} else {
+				// create a resource and put it to the object table
+				objTable.put(key, Class.forName(value).newInstance());
+			}
+		}
+	}
+
+	private void injectDependency() throws Exception {
+		String key = null;
+		Object value = null;
+		
+		for(Object tableKey : objTable.keySet()) {
+			key = (String) tableKey;
+			
+			if(!key.startsWith("jndi.")) {
+				callSetter(objTable.get(key));
+			}
+		}
+	}
+
+	private void callSetter(Object inst) throws Exception {
+		Object setterArg = null;
+		for(Method m : inst.getClass().getMethods()) {
+			if (m.getName().startsWith("set")) {
+				// setters have only one parameter 
+				setterArg = findInstByType(m.getParameterTypes()[0]);
+				
+				if(setterArg != null) {
+					m.invoke(inst, setterArg);
+				}
+			}
+		}
+	}
+	
+	private Object findInstByType(Class<?> setterArgType) {
+		for(Object obj : objTable.values()) {
+			if (setterArgType.isInstance(obj)) {
+				return obj;
+			}
+		}
+		
+		return null;
+	}
+}

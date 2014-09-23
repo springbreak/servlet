@@ -15,7 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import lambda.bind.DataBinding;
+import lambda.context.ApplicationContext;
 import lambda.controller.Controller;
+import lambda.listener.ContextLoaderListener;
 
 @WebServlet("*.do")
 public class DispatcherServlet extends HttpServlet {
@@ -26,29 +28,31 @@ public class DispatcherServlet extends HttpServlet {
    */
   public DispatcherServlet() {
     super();
-    // TODO Auto-generated constructor stub
   }
 
   @Override
   protected void service(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-    // TODO Auto-generated method stub
 
     res.setContentType("text/html; charset=UTF-8");
     String servicePath = req.getServletPath();
     Controller ctrl = null;
-    HashMap<String, Object> model = new HashMap<String, Object>();
 
     try {
       // remove .do from request URL
       String ctrlPath = (servicePath.split("\\."))[0];
-      
-      // get memberDao from servlet context
-      ServletContext sc = this.getServletContext();
-      model.put("memberDao", sc.getAttribute("memberDao"));
-      model.put("session", req.getSession());
 
-      ctrl = (Controller) sc.getAttribute(ctrlPath);
+      // set session 
+      HashMap<String, Object> model = new HashMap<String, Object>();
+      model.put("session", req.getSession());
+      
+      // get beans from ApplicationContext
+      ApplicationContext ac = ContextLoaderListener.getApplicationContext();
+      ctrl = (Controller) ac.getBeans(ctrlPath);
+      
+      if (ctrl == null) {
+    	  throw new Exception("Can't find bean :" + ctrlPath);
+      }
       
       if (ctrl instanceof DataBinding) {
         bindRequiredDataPairs((DataBinding)ctrl, model, req);
