@@ -4,11 +4,14 @@ import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
-import lambda.dao.MemberDao;
+import lambda.annotation.Bean;
+
+import org.reflections.Reflections;
 
 // the purpose of this class is not to modify ContextLoaderListener 
 // when DAOs or controllers added
@@ -26,11 +29,26 @@ public class ApplicationContext {
 		Properties props = new Properties();
 		props.load(new FileReader(propsPath));
 		
-		createInstFromProps(props);
+		
+		getPropsInst(props);
+		createAnnotatedInst();
 		injectDependency();
 	}
 
-	private void createInstFromProps(Properties props) throws Exception {
+	private void createAnnotatedInst() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		Reflections reflector = new Reflections("");
+		// get all annotated classes while searching src including sub-dir
+		Set<Class<?>> annotatedClasses = reflector.getTypesAnnotatedWith(Bean.class);
+		String key = null;
+		
+		for(Class<?> cls : annotatedClasses) {
+			// get the value of @Bean annotation 
+			key = cls.getAnnotation(Bean.class).value();
+			objTable.put(key, cls.newInstance());
+		}
+	}
+
+	private void getPropsInst(Properties props) throws Exception {
 		// We can't create resources provided by Tomcat 
 		// e.g jndi.dataSource = java:comp/env/jdbc/studydb
 		// The acronym JNDI stands for Java Naming and Directory Interface

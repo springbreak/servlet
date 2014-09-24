@@ -6,17 +6,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-import javax.sql.DataSource;
 
 import lambda.context.ApplicationContext;
-import lambda.controller.impl.LoginCtrl;
-import lambda.controller.impl.LogoutCtrl;
-import lambda.controller.impl.MemberAddCtrl;
-import lambda.controller.impl.MemberDeleteCtrl;
-import lambda.controller.impl.MemberListCtrl;
-import lambda.controller.impl.MemberUpdateCtrl;
-import lambda.dao.MemberDao;
-import lambda.dao.impl.MemberDaoJdbc;
 
 @WebListener
 public class ContextLoaderListener implements ServletContextListener {
@@ -31,11 +22,10 @@ public class ContextLoaderListener implements ServletContextListener {
 		try {
 			ServletContext sc = event.getServletContext();
 
-			InitialContext initialContext = new InitialContext();
 			// get the path of 'application.properties' in web.xml
 			String propsPath = sc.getRealPath(sc.getInitParameter("ApplicationPropertyPath"));
 			ac = new ApplicationContext(propsPath);
-
+			
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

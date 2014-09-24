@@ -2,6 +2,7 @@ package lambda.controller.impl;
 
 import java.util.Map;
 
+import lambda.annotation.Bean;
 import lambda.controller.Controller;
 import lambda.dao.MemberDao;
 

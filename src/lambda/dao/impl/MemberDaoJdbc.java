@@ -10,9 +10,11 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import lambda.annotation.Bean;
 import lambda.dao.MemberDao;
 import lambda.vo.Member;
 
+@Bean(value="memberDao")
 public class MemberDaoJdbc implements MemberDao{
   DataSource ds;
 
