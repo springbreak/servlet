@@ -4,6 +4,10 @@
   "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
   <!--  <properties resource="mybatis/db.properties" /> -->
+  
+  <settings>
+    <setting name="logImpl" value="LOG4J"/>
+  </settings>
       
   <typeAliases>
     <typeAlias type="lambda.vo.Member" alias="member"/>
