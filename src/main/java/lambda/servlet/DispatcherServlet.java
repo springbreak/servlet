@@ -48,7 +48,7 @@ public class DispatcherServlet extends HttpServlet {
       
       // get beans from ApplicationContext
       ApplicationContext ac = ContextLoaderListener.getApplicationContext();
-      ctrl = (Controller) ac.getBeans(ctrlPath);
+      ctrl = (Controller) ac.getBean(ctrlPath);
       
       if (ctrl == null) {
     	  throw new Exception("Can't find bean :" + ctrlPath);

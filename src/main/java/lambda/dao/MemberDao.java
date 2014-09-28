@@ -9,7 +9,6 @@ import lambda.vo.Member;
 
 public interface MemberDao {
   
-  public void setDataSource(DataSource ds);
   public List<Member> selectList() throws Exception;
   public int insert(Member member) throws Exception;
   public int delete(int id) throws Exception;

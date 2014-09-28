@@ -32,6 +32,7 @@ dependencies {
   compile 'javassist:javassist:3.12.1.GA'
   compile 'com.google.guava:guava:18.0'
   compile 'org.reflections:reflections:0.9.9-RC2'
+  compile 'org.mybatis:mybatis:3.2.7'
   
   providedCompile "javax.servlet:javax.servlet-api:$servletApiVersion"
   providedCompile "javax.servlet.jsp:javax.servlet.jsp-api:$servletJspApiVersion"

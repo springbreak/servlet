@@ -20,23 +20,20 @@ public class ApplicationContext {
 	// Hashtable is synchronized while Hashmap isn't
 	Hashtable<String, Object> objTable;
 	
-	public Object getBeans(String beanName) {
+	public ApplicationContext() {
+		objTable = new Hashtable<String, Object>();
+	}
+	
+	public Object getBean(String beanName) {
 		return objTable.get(beanName);
 	}
 	
-	public ApplicationContext(String propsPath) throws Exception{
-		objTable = new Hashtable<String, Object>();
-		Properties props = new Properties();
-		props.load(new FileReader(propsPath));
-		
-		
-		getPropsInst(props);
-		createAnnotatedInst();
-		injectDependency();
+	public void addBean(String beanName, Object bean) {
+		objTable.put(beanName, bean);
 	}
-
-	private void createAnnotatedInst() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		Reflections reflector = new Reflections("");
+	
+	public void createAnnotatedInst(String beanPackages) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		Reflections reflector = new Reflections(beanPackages);
 		// get all annotated classes while searching src including sub-dir
 		Set<Class<?>> annotatedClasses = reflector.getTypesAnnotatedWith(Bean.class);
 		String key = null;
@@ -48,10 +45,12 @@ public class ApplicationContext {
 		}
 	}
 
-	private void getPropsInst(Properties props) throws Exception {
+	public void createPropsInst(String propsPath) throws Exception {
 		// We can't create resources provided by Tomcat 
 		// e.g jndi.dataSource = java:comp/env/jdbc/studydb
 		// The acronym JNDI stands for Java Naming and Directory Interface
+		Properties props = new Properties();
+		props.load(new FileReader(propsPath));
 		
 		// To get the resources, we will use jaxax.naming.Context
 		Context context = new InitialContext();
@@ -71,7 +70,7 @@ public class ApplicationContext {
 		}
 	}
 
-	private void injectDependency() throws Exception {
+	public void injectDependency() throws Exception {
 		String key = null;
 		Object value = null;
 		
