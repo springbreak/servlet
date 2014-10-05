@@ -19,11 +19,11 @@ public class MemberDaoJdbc implements MemberDao {
 		this.sqlSessionFactory = sqlSessionFactory;
 	}
 
-	public List<Member> selectList() throws Exception {
+	public List<Member> selectList(HashMap<String, Object> paramMap) throws Exception {
 		SqlSession ss = sqlSessionFactory.openSession();
 		
 		try {
-			return ss.selectList("lambda.dao.MemberDao.selectList");
+			return ss.selectList("lambda.dao.MemberDao.selectList", paramMap);
 		} finally {
 			ss.close();
 		}

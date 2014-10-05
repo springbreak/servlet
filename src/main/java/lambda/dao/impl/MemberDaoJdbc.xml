@@ -13,10 +13,21 @@
     <result column="MOD_DATE" property="modifiedDate" javaType="java.sql.Date" />
   </resultMap>
   
-  <select id="selectList" resultMap="memberResultMap">
+  <select id="selectList" parameterType="map" resultMap="memberResultMap">
   	select MNO, MNAME, EMAIL, CRE_DATE, MOD_DATE
   	from MEMBERS
-  	order by MNO asc
+  	order by
+  	<choose>
+  		<when test="orderCond == 'ID_ASC'">MNO asc</when>
+  		<when test="orderCond == 'ID_DESC'">MNO desc</when>
+  		<when test="orderCond == 'NAME_ASC'">MNAME asc</when>
+  		<when test="orderCond == 'NAME_DESC'">MNAME desc</when>
+  		<when test="orderCond == 'EMAIL_ASC'">EMAIL asc</when>
+  		<when test="orderCond == 'EMAIL_DESC'">EMAIL desc</when>
+  		<when test="orderCond == 'CREATED_DATE_ASC'">CRE_DATE asc</when>
+  		<when test="orderCond == 'CREATED_DATE_DESC'">CRE_DATE desc</when>
+  		<otherwise>MNO desc</otherwise>
+  	</choose>
   </select>
   
   <select id="selectOne" parameterType="int" resultMap="memberResultMap">
